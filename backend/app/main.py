@@ -4,12 +4,12 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import httpx
 
 from .database import Base, engine
 from .routers import resumes, dashboard, jobs
 from .ai.ollama import GROQ_MODEL
 
+# Load environment variables
 load_dotenv()
 
 # Create database tables
@@ -22,12 +22,18 @@ app = FastAPI(
     description="AI-powered resume analysis and job matching using Groq.",
 )
 
-# Configure CORS
-default_origins = "http://localhost:5173,https://ai-resume-analyzer-iota-lac.vercel.app"
+# Configure CORS - keep this section only once
+default_origins = (
+    "http://localhost:5173,"
+    "https://ai-resume-analyzer-iota-lac.vercel.app"
+)
 
 origins = [
-    origin.strip()
-    for origin in os.getenv("CORS_ORIGINS", default_origins).split(",")
+    origin.strip().rstrip("/")
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        default_origins,
+    ).split(",")
     if origin.strip()
 ]
 
